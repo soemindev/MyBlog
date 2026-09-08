@@ -1,5 +1,5 @@
 <?php
-include '../layouts/nav_sidebar.php';
+
 
 include '../dbconnect.php';
 
@@ -11,6 +11,22 @@ $stmt -> execute();
 
 $posts = $stmt->fetchAll();
 // var_dump($posts);
+
+if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
+$id = $_POST['id'];
+
+$sql = "DELETE FROM posts WHERE id = :id";
+$stmt = $conn->prepare($sql);
+$stmt -> bindParam(':id',$id);
+$stmt ->execute();
+
+header("location:posts.php");
+
+
+}
+
+include '../layouts/nav_sidebar.php';
 ?>
     <main>
                     <div class="container-fluid px-4">
@@ -67,8 +83,8 @@ $posts = $stmt->fetchAll();
                                                 <td><?php echo $post['c_name'];?></td>
                                                 <td><?php echo $post['u_name'];?></td>
                                                 <td>
-                                                    <button class="btn btn-danger">Delete</button>
-                                                    <a href="edit.php?id=<?= $post['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                                    <button class="btn btn-danger delete" data-id= <?= $post['id']?>>Delete</button>
+                                                    <a href="edit.php?id=<?= $post['id'] ?>" class="btn btn-warning ">Edit</a>
                                                 </td>
                                             </tr>
                                             
@@ -81,6 +97,40 @@ $posts = $stmt->fetchAll();
                         </div>
                     </div>
     </main>
+    
+            <!-- Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header bg-danger text-light">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Posts Delete</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                    <h3>Are you sure delete?</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form action="<?php htmlspecialchars($_SERVER['PHP_SELF']) ?> " method="post">
+                        <input type="hidden" name="id" id="p-id">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <script>
+                $(document).ready(function(){
+                    $('tbody').on('click','.delete',function(){
+                        let id = $(this).data('id');
+                        console.log(id);
+                        $('#p-id').val(id);
+                        $('#deleteModal').modal('show');
+                    })
+                })
+            </script>
 
             
 <?php
