@@ -1,6 +1,6 @@
 <?php
-include 'layouts/nav.php'
-include '../dbconnnect.php'
+include 'layouts/nav.php';
+// include '../admin/dbconnect.php';
 
 
 ?>
@@ -77,5 +77,5 @@ include '../dbconnnect.php'
                 </div>
                 
                 <?php
-include 'layouts/footer.php'
+include 'layouts/footer.php';
 ?>

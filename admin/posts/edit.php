@@ -1,4 +1,7 @@
 <?php 
+session_start();
+
+if($_SESSION['user_id']){
 include '../dbconnect.php';
 
 $id = $_GET['id'];
@@ -139,7 +142,12 @@ $categories = $stmt->fetchAll();
         </div>
 
 <?php 
+
     include '../layouts/footer.php';
+     }
+else{
+    header('location: ../login.php');
+}
 ?>
 
 

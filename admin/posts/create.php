@@ -1,4 +1,7 @@
 <?php 
+session_start();
+
+if($_SESSION['user_id']){
 include '../dbconnect.php';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -105,6 +108,10 @@ $categories = $stmt->fetchAll();
 
 <?php 
     include '../layouts/footer.php';
+    }
+else{
+    header('location: ../login.php');
+}
 ?>
 
 

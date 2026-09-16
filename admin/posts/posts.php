@@ -1,6 +1,8 @@
 <?php
 
+session_start();
 
+if($_SESSION['user_id']){
 include '../dbconnect.php';
 
 $sql = "SELECT posts.*, categories.name as c_name , users.name as u_name FROM posts INNER JOIN categories ON posts.category_id = categories.id INNER JOIN users ON posts.user_id = users.id ORDER BY posts.id DESC";
@@ -135,4 +137,8 @@ include '../layouts/nav_sidebar.php';
             
 <?php
 include '../layouts/footer.php';
+}
+else{
+    header('location: ../login.php');
+}
 ?>
