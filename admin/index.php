@@ -1,11 +1,11 @@
 <?php
-session_start();
 
-if($_SESSION['user_id']){
-    
-include 'layouts/nav_sidebar.php';
-?>
-            
+    session_start();
+    if($_SESSION['user_id']){
+
+    include "layouts/nav_sidebar.php";
+    ?>
+
                 <main>
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Dashboard</h1>
@@ -560,13 +560,12 @@ include 'layouts/nav_sidebar.php';
                         </div>
                     </div>
                 </main>
+               
+       <?php
+       include "layouts/footer.php";
 
-                <?php
-include 'layouts/footer.php';
-
-}
-else{
-    header('location: login.php');
-}
-?>
-                
+       }else{
+        header('location: login.php');
+       }
+       ?>         
+       

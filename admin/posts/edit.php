@@ -1,68 +1,79 @@
-<?php 
-session_start();
+<?php
 
-if($_SESSION['user_id']){
-include '../dbconnect.php';
+
+   session_start();
+    if($_SESSION['user_id']){
+
+include "../dbconnect.php";
 
 $id = $_GET['id'];
+//echo $id;
+//die();
 
-    $sql = 'SELECT * FROM posts WHERE id = :id';
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':id', $id);
-    $stmt->execute();
-    $post = $stmt->fetch();
-    // var_dump ($post);
-    // die();
+$sql = "SELECT * FROM posts WHERE id = :id";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':id',$id);
+$stmt->execute();
+$post = $stmt->fetch();
+// var_dump($post);
+// die();
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $title =$_POST['title'];
-    
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $title = $_POST['title'];
     $description = $_POST['description'];
     $category_id = $_POST['category_id'];
     $user_id = 1;
 
     $imageArray = $_FILES['image'];
-    // var_dump($imageArray);
+    var_dump($imageArray);
     // die();
-    if(isset ($imageArray) && $imageArray['size'] > 0){
-        $dir = '../images/';
-        $imageDir = $dir.$imageArray['name']; // floder ထဲကိုတကယ်သွားသိမ်းမဲ့ပတ်လမ်းကြောင်း 
+    if(isset($imageArray) && $imageArray['size'] > 0){
+        $dir = "../images/";
+        echo $dir;
+        echo "<br>";
+        $imageDir = $dir.$imageArray['name']; //folder ထဲကို တကယ်သိမ်းမည့် path လမ်းကြောင်း
+        //echo $imageDir;
 
-        $image = 'images/'.$imageArray['name'];
+        $image = 'images/'.$imageArray['name']; //Database ထဲသိမ်းမည့် name
         echo $image;
-        $tmpName = $imageArray['tmp_name'];
 
+        $tmpName = $imageArray['tmp_name'];
         move_uploaded_file($tmpName, $imageDir);
     }else{
         $image = $_POST['old_image'];
     }
+    //die();
 
-    $sql="UPDATE posts SET title = :title ,image = :image ,description = :description ,category_id = :category_id ,user_id = :user_id WHERE id = :id";
-    
+
+    $sql = "UPDATE posts SET title=:title, image=:image, description=:description, category_id=:category_id, user_id=:user_id WHERE id =:id";
+
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id',$id);
     $stmt->bindParam(':title',$title);
-    $stmt->bindParam(':image',$image); 
+    $stmt->bindParam(':image',$image);
     $stmt->bindParam(':description',$description);
     $stmt->bindParam(':category_id',$category_id);
     $stmt->bindParam(':user_id',$user_id);
-
     $stmt->execute();
 
-    header('location: posts.php');
-
-
+    header("location: posts.php");
 
 }
 
-include '../layouts/nav_sidebar.php';
+
+include "../layouts/nav_sidebar.php";
 
 $sql = "SELECT * FROM categories";
 $stmt = $conn->prepare($sql);
-
 $stmt->execute();
 $categories = $stmt->fetchAll();
+// var_dump($categories);
+
 ?>
+
+
 
     <div class="container-fluid px-4">
             
@@ -84,70 +95,73 @@ $categories = $stmt->fetchAll();
                     Create Posts
                 </div>
                 <div class="card-body">
-                    
-                    <form action="edit.php?id=<?= $post['id'] ?>" method="POST" enctype="multipart/form-data">
-
+                    <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="title"  
-                            value="<?= $post['title'] ?>">
+                            <input type="text" class="form-control" id="title" name="title" value="<?= $post['title'] ?>">
                         </div>
                         <div class="mb-3">
                             <label for="category_id">Categories</label>
                             <select class="form-select" id="category_id" name="category_id" aria-label="Default select example">
                                 <option selected>Choose....</option>
                                 
-                                    <?php foreach($categories as $category) {
+                                <?php
+                                     foreach($categories as $category){
+                                ?>
 
-                                    ?>
-                                    <option value="<?= $category['id'] ?>" <?= ($post['category_id'] == $category['id']) ? "selected":'';?> > <?= ($category['name']) ?></option>
-                                    <?php } ?>
+                                    <option value="<?= $category['id'] ?>" <?= ($post['category_id'] == $category['id']) ? "selected":'';?> ><?= $category['name']; ?></option>
+                                    
+
+                                <?php
+                                }
+                                ?>
+
+                                
 
                                 
                             </select>
                         </div>
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-tab-pane" type="button" role="tab" aria-controls="image-tab-pane" aria-selected="true">Image</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="new-image-tab" data-bs-toggle="tab" data-bs-target="#new-image-tab-pane" type="button" role="tab" aria-controls="new-image-tab-pane" aria-selected="false">New Image</button>
-                                </li>
-                                
-                        </ul>
-                            <div class="tab-content" id="myTabContent">
-                                <div class="tab-pane fade show active" id="image-tab-pane" role="tabpanel" aria-labelledby="image-tab" tabindex="0">
-                                    <img src="../<?= $post['image']?>" alt="" class="h-50 w-50">
-                                    <input type="hidden" name="old_image" value="<?= $post['image']?>">
-                                </div>
-                                
-                                <div class="tab-pane fade" id="new-image-tab-pane" role="tabpanel" aria-labelledby="new-image-tab" tabindex="0">
-                                    <input type="file" class="form-control my-5" id="image" name="image">
-                                </div>
-                                
-                            </div>
+                        <div class="mb-3">
 
-                    
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-tab-pane" type="button" role="tab" aria-controls="image-tab-pane" aria-selected="true">Image</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="new-image-tab" data-bs-toggle="tab" data-bs-target="#new-image-tab-pane" type="button" role="tab" aria-controls="new-image-tab-pane" aria-selected="false">New Image</button>
+                            </li>
+                           
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="image-tab-pane" role="tabpanel" aria-labelledby="image-tab" tabindex="0">
+                            <img src="../<?= $post['image'] ?>" alt="" class="w-50 h-50 my-2">
+                            <input type="hidden" name="old_image" id="" value="<?= $post['image'] ?>">
+                        </div>
+                        <div class="tab-pane fade" id="new-image-tab-pane" role="tabpanel" aria-labelledby="new-image-tab" tabindex="0">
+                            <input type="file" class="form-control my-5" id="image" name="image">
+                        </div>
+                        
+
+                        </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea name="description" class="form-control" id="description" 
-                            ><?= $post['description'] ?></textarea>
+                            <textarea name="description" class="form-control" id="description"><?= $post['description'] ?></textarea>
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary">Create</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-<?php 
 
-    include '../layouts/footer.php';
-     }
-else{
-    header('location: ../login.php');
-}
+
+<?php
+include "../layouts/footer.php";
+
+
+   }else{
+        header('location: ../login.php');
+       }
 ?>
-
-

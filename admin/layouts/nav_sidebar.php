@@ -8,14 +8,15 @@
         <meta name="author" content="" />
         <title>Dashboard - SB Admin</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="/myblog/admin/css/styles.css" rel="stylesheet" />
+        <link href="/MyBlog/admin/css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
         <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">Adaim Panel</a>
+            <a class="navbar-brand ps-3" href="index.html">Admin Panel</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -31,7 +32,6 @@
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                        
-                       
                         <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                     </ul>
                 </li>
@@ -43,29 +43,40 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">Core</div>
-                            <a class="nav-link" href="/myblog/admin/index.php">
+                            <a class="nav-link" href="/MyBlog/admin/index.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
-                       
+                    
                             <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="/myblog/admin/posts/posts.php">
+                            <a class="nav-link" href="/MyBlog/admin/posts/posts.php">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Posts
                             </a>
-                            <a class="nav-link" href="/myblog/admin/category/category.php">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group"></i></div>
-                                Category
+
+                            <?php
+                                if($_SESSION['user_role'] == 'admin'){
+
+                            ?>
+
+                            
+                            <a class="nav-link" href="/MyBlog/admin/users/users.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                users
                             </a>
-                            <a class="nav-link" href="/myblog/admin/user/user.php">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
-                                User
+                             <a class="nav-link" href="/MyBlog/admin/categories/categories.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                categories
                             </a>
+
+                            <?php
+                               }
+                               ?>
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        <?= $_SESSION['user_name']?>
                     </div>
                 </nav>
             </div>

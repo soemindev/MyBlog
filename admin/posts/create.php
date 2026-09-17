@@ -1,55 +1,61 @@
-<?php 
-session_start();
+<?php
 
-if($_SESSION['user_id']){
-include '../dbconnect.php';
+  session_start();
+    if($_SESSION['user_id']){
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $title =$_POST['title'];
-    
+include "../dbconnect.php";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $title = $_POST['title'];
     $description = $_POST['description'];
     $category_id = $_POST['category_id'];
     $user_id = 1;
 
     $imageArray = $_FILES['image'];
-    // var_dump($imageArray);
+    var_dump($imageArray);
     // die();
-    if(isset ($imageArray) && $imageArray['size'] > 0){
-        $dir = '../images/';
-        $imageDir = $dir.$imageArray['name']; // floder ထဲကိုတကယ်သွားသိမ်းမဲ့ပတ်လမ်းကြောင်း 
+    if(isset($imageArray) && $imageArray['size'] > 0){
+        $dir = "../images/";
+        echo $dir;
+        echo "<br>";
+        $imageDir = $dir.$imageArray['name']; //folder ထဲကို တကယ်သိမ်းမည့် path လမ်းကြောင်း
+        //echo $imageDir;
 
-        $image = 'images/'.$imageArray['name'];
-        echo $image;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+        $image = 'images/'.$imageArray['name']; //Database ထဲသိမ်းမည့် name
+        echo $image;
+
         $tmpName = $imageArray['tmp_name'];
-
         move_uploaded_file($tmpName, $imageDir);
     }
 
-    $sql="INSERT INTO posts (title,image,description,category_id,user_id)
-    VALUES (:title, :image, :description, :category_id, :user_id)";
+
+    $sql = "INSERT INTO posts (title, image, description, category_id, user_id)
+    VALUES(:title, :image, :description, :category_id, :user_id)";
+
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':title',$title);
-    $stmt->bindParam(':image',$image); 
+    $stmt->bindParam(':image',$image);
     $stmt->bindParam(':description',$description);
     $stmt->bindParam(':category_id',$category_id);
     $stmt->bindParam(':user_id',$user_id);
-
     $stmt->execute();
 
-    header('location: posts.php');
-
-
+    header("location: posts.php");
 
 }
 
-include '../layouts/nav_sidebar.php';
+
+include "../layouts/nav_sidebar.php";
 
 $sql = "SELECT * FROM categories";
 $stmt = $conn->prepare($sql);
-
 $stmt->execute();
 $categories = $stmt->fetchAll();
+// var_dump($categories);
+
 ?>
+
+
 
     <div class="container-fluid px-4">
             
@@ -71,7 +77,7 @@ $categories = $stmt->fetchAll();
                     Create Posts
                 </div>
                 <div class="card-body">
-                    <form action=" <?php echo htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="POST" enctype="multipart/form-data">
+                    <form action="<?php htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
                             <input type="text" class="form-control" id="title" name="title">
@@ -81,11 +87,18 @@ $categories = $stmt->fetchAll();
                             <select class="form-select" id="category_id" name="category_id" aria-label="Default select example">
                                 <option selected>Choose....</option>
                                 
-                                    <?php foreach($categories as $category) {
+                                <?php
+                                     foreach($categories as $category){
+                                ?>
 
-                                    ?>
-                                    <option value="<?= $category['id'] ?>"> <?= ($category['name']) ?></option>
-                                    <?php } ?>
+                                    <option value="<?= $category['id'] ?>"><?= $category['name']; ?></option>
+                                    
+
+                                <?php
+                                }
+                                ?>
+
+                                
 
                                 
                             </select>
@@ -106,12 +119,12 @@ $categories = $stmt->fetchAll();
             </div>
         </div>
 
-<?php 
-    include '../layouts/footer.php';
-    }
-else{
-    header('location: ../login.php');
-}
+
+
+<?php
+include "../layouts/footer.php";
+
+   }else{
+        header('location: ../login.php');
+       }
 ?>
-
-
